@@ -1,26 +1,58 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:meals_app/constants.dart';
 import 'package:meals_app/models/meals.dart';
+import 'package:meals_app/providers/favourites_provider.dart';
 import 'package:meals_app/widgets/meal_details_section.dart';
 
-class MealDetailsScreen extends StatelessWidget {
-  const MealDetailsScreen(
-      {super.key, required this.meal, required this.onToggleFavourite});
+class MealDetailsScreen extends ConsumerWidget {
+  const MealDetailsScreen({
+    super.key,
+    required this.meal,
+  });
 
   final Meal meal;
-  final Function(Meal meal) onToggleFavourite;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    var mealHandler = ref.read(favouriteMealsProvider.notifier);
+    var mealWatcher = ref.watch(favouriteMealsProvider);
+
+    var isFavourite = mealWatcher.contains(meal);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(meal.title),
         actions: [
           IconButton(
             onPressed: () {
-              onToggleFavourite(meal);
+              var isAddedAsFavourite = mealHandler.onToggleFavourite(meal);
+              ScaffoldMessenger.of(context).clearSnackBars();
+              ScaffoldMessenger.of(context).showSnackBar(
+                isAddedAsFavourite
+                    ? const SnackBar(
+                        content: Text('Meal added as Favourite'),
+                        duration: Duration(seconds: 1),
+                      )
+                    : const SnackBar(
+                        content: Text('Meal removed as Favourite'),
+                        duration: Duration(seconds: 1),
+                      ),
+              );
             },
-            icon: const Icon(Icons.star),
+            icon: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 300),
+              transitionBuilder: (child, animation) {
+                return RotationTransition(
+                  turns: Tween<double>(begin: 0.6, end: 1).animate(animation),
+                  child: child,
+                );
+              },
+              child: Icon(
+                isFavourite ? Icons.star : Icons.star_border,
+                key: ValueKey(isFavourite),
+              ),
+            ),
           ),
         ],
       ),
@@ -36,9 +68,12 @@ class MealDetailsScreen extends StatelessWidget {
               clipBehavior: Clip.hardEdge,
               height: 300,
               width: double.infinity,
-              child: Image.network(
-                meal.imageUrl,
-                fit: BoxFit.fill,
+              child: Hero(
+                tag: meal.id,
+                child: Image.network(
+                  meal.imageUrl,
+                  fit: BoxFit.fill,
+                ),
               ),
             ),
             const SizedBox(

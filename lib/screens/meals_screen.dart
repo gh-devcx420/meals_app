@@ -4,15 +4,14 @@ import 'package:meals_app/screens/meal_details_screen.dart';
 import 'package:meals_app/widgets/meal_card.dart';
 
 class MealsScreen extends StatelessWidget {
-  const MealsScreen(
-      {this.title,
-      required this.meals,
-      super.key,
-      required this.onToggleFavourite});
+  const MealsScreen({
+    this.title,
+    required this.meals,
+    super.key,
+  });
 
   final String? title;
   final List<Meal> meals;
-  final Function(Meal) onToggleFavourite;
 
   void mealDetails(BuildContext context, Meal meal) {
     Navigator.of(context).push(
@@ -20,7 +19,6 @@ class MealsScreen extends StatelessWidget {
         builder: (context) {
           return MealDetailsScreen(
             meal: meal,
-            onToggleFavourite: onToggleFavourite,
           );
         },
       ),

@@ -1,40 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:meals_app/constants.dart';
 import 'package:meals_app/data/available_categories.dart';
-import 'package:meals_app/data/meals_data.dart';
 import 'package:meals_app/models/meal_category.dart';
-import 'package:meals_app/screens/filters_screen.dart';
+import 'package:meals_app/models/meals.dart';
 import 'package:meals_app/screens/meals_screen.dart';
 import 'package:meals_app/widgets/category_grid_item.dart';
 
-import '../models/meals.dart';
-
 class CategoriesScreen extends StatelessWidget {
-  const CategoriesScreen(
-      {super.key,
-      required this.onToggleFavourite,
-      required this.currentFilters});
+  const CategoriesScreen({super.key, required this.availableMeals});
 
-  final Function(Meal) onToggleFavourite;
-  final Map<Filter, bool> currentFilters;
+  final List<Meal> availableMeals;
 
   void showMealsForCategory(BuildContext context, MealCategory category) {
-    final availableMeals = mealList.where((meal) {
-      if (currentFilters[Filter.glutenFree]! && !meal.isGlutenFree) {
-        return false;
-      }
-      if (currentFilters[Filter.lactoseFree]! && !meal.isLactoseFree) {
-        return false;
-      }
-      if (currentFilters[Filter.vegetarian]! && !meal.isVegetarian) {
-        return false;
-      }
-      if (currentFilters[Filter.vegan]! && !meal.isVegan) {
-        return false;
-      }
-      return true;
-    }).toList();
-
     final filteredMeals = availableMeals
         .where(
           (meal) => meal.categories.contains(category.id),
@@ -47,7 +24,6 @@ class CategoriesScreen extends StatelessWidget {
           return MealsScreen(
             title: category.title,
             meals: filteredMeals,
-            onToggleFavourite: onToggleFavourite,
           );
         },
       ),

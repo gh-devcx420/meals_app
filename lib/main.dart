@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:meals_app/screens/tabs_screen.dart';
 import 'package:meals_app/theme.dart';
 
@@ -6,7 +7,9 @@ Color kSeedColour = const Color.fromARGB(255, 191, 0, 255);
 
 void main() {
   runApp(
-    const MealsApp(),
+    const ProviderScope(
+      child: MealsApp(),
+    ),
   );
 }
 

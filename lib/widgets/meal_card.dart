@@ -33,12 +33,15 @@ class MealCard extends StatelessWidget {
         onTap: onMealCardTap,
         child: Stack(
           children: [
-            FadeInImage(
-              placeholder: MemoryImage(kTransparentImage),
-              image: NetworkImage(meal.imageUrl),
-              height: 260,
-              width: double.infinity,
-              fit: BoxFit.fill,
+            Hero(
+              tag: meal.id,
+              child: FadeInImage(
+                placeholder: MemoryImage(kTransparentImage),
+                image: NetworkImage(meal.imageUrl),
+                height: 260,
+                width: double.infinity,
+                fit: BoxFit.fill,
+              ),
             ),
             Positioned(
               left: 0,

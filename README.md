@@ -55,6 +55,10 @@ recipes, and customization options to enhance the user experience.
 - **UI Design with Stack**: Designing layered interfaces with the `Stack` widget for floating or
   overlapping elements.
 
+- **Simple Implicit Animations**: Added a few simple implicit animations using `AnimatedSwitcher`
+  and `Hero`
+  widgets.
+
 ## 🔗 Download
 
 - [Download the app](https://drive.google.com/drive/folders/1dqEMdS67vPBTUDHjnLNbU9cCKDxHkaDk?usp=drive_link)

@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:meals_app/main.dart';
-import 'package:meals_app/models/meals.dart';
+import 'package:meals_app/providers/favourites_provider.dart';
+import 'package:meals_app/providers/filters_provider.dart';
 import 'package:meals_app/screens/categories_screen.dart';
 import 'package:meals_app/screens/filters_screen.dart';
 import 'package:meals_app/screens/meals_screen.dart';
 import 'package:meals_app/widgets/main_drawer.dart';
 import 'package:meals_app/widgets/settings_alert_dialogue.dart';
 
-class TabsScreen extends StatefulWidget {
+class TabsScreen extends ConsumerStatefulWidget {
   const TabsScreen({
     super.key,
     required this.changeThemeSeed,
@@ -16,46 +18,18 @@ class TabsScreen extends StatefulWidget {
   final void Function(Color) changeThemeSeed;
 
   @override
-  State<TabsScreen> createState() => _TabsScreenState();
+  ConsumerState<TabsScreen> createState() => _TabsScreenState();
 }
 
-class _TabsScreenState extends State<TabsScreen> {
+class _TabsScreenState extends ConsumerState<TabsScreen> {
   int _currentPageIndex = 0;
   Color _selectedThemeColour = kSeedColour;
-  final List<Meal> _favouriteMeals = [];
   Map<Filter, bool> currentFilters = {
     Filter.glutenFree: false,
     Filter.lactoseFree: false,
     Filter.vegetarian: false,
     Filter.vegan: false,
   };
-
-  void _showInfoMessage(String message) {
-    ScaffoldMessenger.of(context).clearSnackBars();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          message,
-        ),
-      ),
-    );
-  }
-
-  void _toggleMealFavouriteStatus(Meal meal) {
-    final bool isExisting = _favouriteMeals.contains(meal);
-
-    if (isExisting) {
-      setState(() {
-        _favouriteMeals.remove(meal);
-        _showInfoMessage('Removed from Favourites');
-      });
-    } else {
-      setState(() {
-        _favouriteMeals.add(meal);
-        _showInfoMessage('Added to Favourites');
-      });
-    }
-  }
 
   void onBottomNavigationBarItemTap(index) {
     setState(() {
@@ -71,18 +45,13 @@ class _TabsScreenState extends State<TabsScreen> {
       });
     }
     if (identifier == 'Filters') {
-      final filterResult = await Navigator.of(context).push(
+      Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) {
-            return FiltersScreen(
-              activeFilters: currentFilters,
-            );
+            return const FiltersScreen();
           },
         ),
       );
-      setState(() {
-        currentFilters = filterResult;
-      });
     }
   }
 
@@ -106,16 +75,17 @@ class _TabsScreenState extends State<TabsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final availableMealsList = ref.watch(filteredMealsProvider);
+
     Widget activeScreen = CategoriesScreen(
-      currentFilters: currentFilters,
-      onToggleFavourite: _toggleMealFavouriteStatus,
+      availableMeals: availableMealsList,
     );
     String activePageTitle = 'Meal Categories';
 
     if (_currentPageIndex == 1) {
+      final favouriteMealList = ref.watch(favouriteMealsProvider);
       activeScreen = MealsScreen(
-        onToggleFavourite: _toggleMealFavouriteStatus,
-        meals: _favouriteMeals,
+        meals: favouriteMealList,
       );
       activePageTitle = 'Your Favourites';
     }
